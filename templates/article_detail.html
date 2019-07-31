@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block page_main %}
+    <div><h1>{{ article.title }}</h1></div>
+    <div>{{ article_detail.content|safe }}</div>
+    <div class=" clearfix">
+        <div id="div_digg">
+            <div class="diggit action">
+                <span class="diggnum" id="digg_count">{{ article.up_count }}</span>
+            </div>
+            <div class="buryit action">
+                <span class="burynum" id="bury_count">{{ article.down_count }}</span>
+            </div>
+            <div class="clear"></div>
+            <div class="diggword" id="digg_tips" style="color: red;"></div>
+        </div>
+    </div>
+{#     <div class="poll clearfix">#}
+{#        <div id="div_digg">#}
+{#            <div class="diggit action">#}
+{#                <span class="diggnum" id="digg_count">{{ article.up_count }}</span>#}
+{#            </div>#}
+{#            <div class="buryit action">#}
+{#                <span class="burynum" id="bury_count">{{ article.down_count }}</span>#}
+{#            </div>#}
+{#            <div class="clear"></div>#}
+{#            <div class="diggword" id="digg_tips" style="color: red;"></div>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+    <div class="comment_tree">
+        <p>评论树</p>
+
+    </div>
+
+    {% if request.user.username %}
+        <div id="comment_form" class="commentform">
+        <div id="comment_form_container">
+            <div id="commentform_title">发表评论</div>
+            <span id="tip_comment" style="color:Red"></span>
+            <p>
+                昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                          value="{{ request.user.username }}">
+            </p>
+            <div class="commentbox_main">
+                <div class="commentbox_title">
+                    <div class="commentbox_title_left">评论内容：</div>
+
+                    <div class="clearfix"></div>
+                    <textarea id="tbCommentBody" class="comment_textarea"></textarea>
+                </div>
+                <p id="commentbox_opt">
+                    <button id="comment_btn">提交评论</button>
+
+                    <a href="/logout/">退出</a>
+
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <div class="login_tips">注册用户登录后才能发表评论，请
+            <a href="/login/" class="underline">登录</a>
+            或 <a href="/reg/" class="underline">注册</a>，
+            访问 <a href="/index/">主页</a></div>
+    {% endif %}
+
+    {% csrf_token %}
+    <div class="info" article_id="{{ article.pk }}" username="{{ request.user.username }}"></div>
+    {#    做成静态文件导入#}
+    <script src="/static/js/article_detail.js"></script>
+    <script>
+
+        $.ajax({
+            url: "/app01/comment_tree/" +{{ article.pk }},
+            success: function (data) {
+                $.each(data, function (index, comment) {
+                    console.log(data)
+                    var str1 = "<div class=\"feedbackItem _right\" comment_pk=\"" + comment.pk + "\">\n" +
+                        "                <div class=\"feedbackListSubtitle\">\n" +
+                        "                    {% if request.user.username %}\n"+
+                            "                        <div class=\"feedbackManage\">\n"+
+                            "                            <span class=\"comment_actions\">\n"+
+                            "                                <a  class=\"reply_btn\" username=\""+comment.user__username
+                            +" \"comment_id=\""+comment.pk +"\">回复</a>\n"
+                            +
+                            "                                <a >引用</a>\n"+
+                            "                            </span>\n"+
+                            "                        </div>\n"+
+                            "                    {% endif %}\n" +
+                        "                    <a href=\"\" class=\"layer\">#" + index + "楼</a>\n" +
+                        "                    <span class=\"comment_date\">" + comment.create_time + "</span> |\n" +
+                        "                    <a id=\"\" href=\"/app01/" + comment.user__username + "\" target=\"_blank\">" + comment.user__username + " </a>\n" +
+                        "                </div>\n" +
+                        "                <div class=\"feedbackCon\">\n" +
+                        "                    <div id=\"\" class=\"blog_comment_body\">" + comment.content + "</div>\n" +
+                        "\n" +
+                        "                </div>"
+                    var str2 = "<div class=\"reply_comment _right\" comment_id=\"" + comment.pk + "\">\n" +
+                        "         <div class=\"header\">\n" +
+                        "             <a href=\"/app01/{{ request.user.username }}\">{{ request.user.username }}</a>回复" +
+                        "              <div class=\"feedbackCon\">\n" +
+                        "                    <div id=\"\" class=\"blog_comment_body\">" + comment.content + "</div>\n" +
+                        "\n" +
+                        "         </div>\n" +
+                        "\n" +
+                        "\n" +
+                        "    </div>"
+                    if (comment.parent_comment_id) {
+
+                        pid = comment.parent_comment_id;
+                        $("[comment_pk=" + pid + "]").append(str2)
+                    } else {
+                        $(".comment_tree").append(str1);
+
+                    }
+                })
+            }
+        })
+
+        var pid = "";
+         $(document).on('click','#comment_btn',function(){
+            var article_id = "{{ article.pk }}";
+            console.log(article_id);
+            var content = $("#tbCommentBody").val();
+           if (pid)
+           {
+               var index = content.indexOf("\n");
+           content = content.slice(index + 1);
+          }
+
+            $.ajax({
+                    url: "/app01/comment/",
+                    type: "post",
+                    data: {
+                        article_id: article_id,
+                        content: content,
+                        pid: pid,
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
+                    },
+                    success: function (data) {
+                        var create_time = data.create_time
+                        var content = data.content
+                        var username = data.username
+                        var div_str = " <div class=\"feedbackItem\">\n" +
+                            "                <div class=\"feedbackListSubtitle\"> " +
+                            "                    <span class=\"comment_date\">" + create_time + "</span> |\n" +
+                            "                    <a id=\"\" href=\"/app01/" + username + "\" target=\"_blank\">" + username + "</a>\n" +
+                            "                </div>\n" +
+                            "                <div class=\"feedbackCon\">\n" +
+                            "                    <div id=\"\" class=\"blog_comment_body\">" + content + "</div>"
+                        {#  var comment_li = '<li class="list-group-item"><div><span style="color: gray">' + create_time + '</span> &nbsp;&nbsp; <a href=""><span>' + username + '</span></a></div> <div class="con"> <p> ' + content + ' </p> </div> </li>';#}
+                        $(".comment_tree").append(div_str);
+                        $("#tbCommentBody").val("");
+                        pid = "";
+                        alert(pid)
+                    }
+                }
+            )
+        })
+        $(document).on('click','a.reply_btn',function(){
+
+            console.log(1)
+            $("#tbCommentBody").focus();
+            var username = $(".reply_btn").attr("username");
+            var s = "@" + username + "\n";
+            $("#tbCommentBody").val(s);
+            pid = $(this).attr("comment_id");
+            console.log(pid)
+        })
+    </script>
+{% endblock %}
+
+
+
+
+
+{##}
+{#    <script>#}
+{#        $(".action").on('click', function () {#}
+{#            var is_click = $(this).hasClass("diggit");#}
+{#            var article_id = '{{ article.pk }}';#}
+{#            $.ajax(#}
+{#                {#}
+{#                    url: '/app01/up_down/',#}
+{#                    type: 'post',#}
+{#                    data: {#}
+{#                        is_click: is_click,#}
+{#                        article_id: article_id,#}
+{#                        csrfmiddlewaretoken:$("[name='csrfmiddlewaretoken']").val()#}
+{#                    },#}
+{#                    success:function(data){#}
+{#                        if(data.status) {#}
+{#                            if (is_click) {#}
+{#                                var up_count = $(".diggit").text();#}
+{#                                up_count = parseInt(up_count) + 1;#}
+{#                                $(".diggit").text(up_count);#}
+{#                            } else {#}
+{#                                var down_count = $(".buryit").text();#}
+{#                                down_count = parseInt(down_count) + 1;#}
+{#                                $(".buryit").text(down_count);#}
+{#                            }#}
+{#                        }#}
+{#                        else{#}
+{#                                if(data.first_action){#}
+{#                                    $(".diggword").text("你已经点赞过");#}
+{#                                } else{#}
+{#                                    $(".diggword").text("你已经踩过");#}
+{#                                }#}
+{#                                 setTimeout(function () {#}
+{#                                     $("#digg_tips").html("")#}
+{#                                     },1000)#}
+{#                        }#}
+{#                    }#}
+{#            })#}
+{#        })#}
+{##}
+{#    </script>#}
+{#    <div class="comment_list">#}
+{#        <p>评论列表</p>#}
+{#        {% for comment in comment_list %}#}
+{#            <div class="feedbackItem" comment_id="{{ comment.pk }}">#}
+{#                <div class="feedbackListSubtitle">#}
+{#                    {% if request.user.username %}#}
+{#                        <div class="feedbackManage">#}
+{#                            <span class="comment_actions">#}
+{#                                <a  class="reply_btn" username="{{ request.user.username }}"comment_id="{{ comment.pk }}">回复</a>#}
+{#                                <a >引用</a>#}
+{#                            </span>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+{#                    <a href="" class="layer">#{{ forloop.counter }}楼</a>#}
+{#                    <span class="comment_date">{{ comment.create_time|date:"Y-m-d" }}</span> |#}
+{#                    <a id="" href="/app01/{{comment.user.username }}" target="_blank">{{  comment.user.username }} </a>#}
+{#                </div>#}
+{#                <div class="feedbackCon">#}
+{#                    <div id="" class="blog_comment_body">{{ comment.content }}</div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}

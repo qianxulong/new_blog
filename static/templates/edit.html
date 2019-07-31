@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>修改密码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/fontAwesome/css/font-awesome.min.css">
+
+</head>
+<body>
+<form action="/edit/" method="POST">
+
+    {% csrf_token %}
+    </label>
+    </p>
+    <label>
+        <p>原密码：</p>
+        <p>
+            <input type="password" name="pwd1">
+        </p>
+    </label>
+    </p>
+    <p>
+        <label>
+
+        </label>
+    </p>
+    <label>
+        <p>重新设置的密码：</p>
+        <p>
+            <input type="password" name="pwd2">
+        </p>
+    </label>
+    </p>
+    <p>
+        <label>
+        </label>
+    </p>
+    <label>
+        <p>再次输入密码：</p>
+        <p>
+            <input type="password" name="pwd3">
+        </p>
+    </label>
+    </p>
+    <p>
+        <label>
+            <button>提交</button>
+</form>
+
+<script src="/static/jquery-3.2.1.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

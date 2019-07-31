@@ -1,0 +1,24 @@
+{#    <div class="comment_list">#}
+{#        <p>评论列表</p>#}
+{#        {% for comment in comment_list %}#}
+{#            <div class="feedbackItem" comment_id="{{ comment.pk }}">#}
+{#                <div class="feedbackListSubtitle">#}
+{#                    {% if request.user.username %}#}
+{#                        <div class="feedbackManage">#}
+{#                            <span class="comment_actions">#}
+{#                                <a  class="reply_btn" username="{{ request.user.username }}"comment_id="{{ comment.pk }}">回复</a>#}
+{#                                <a >引用</a>#}
+{#                            </span>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+{#                    <a href="" class="layer">#{{ forloop.counter }}楼</a>#}
+{#                    <span class="comment_date">{{ comment.create_time|date:"Y-m-d" }}</span> |#}
+{#                    <a id="" href="/app01/{{comment.user.username }}" target="_blank">{{  comment.user.username }} </a>#}
+{#                </div>#}
+{#                <div class="feedbackCon">#}
+{#                    <div id="" class="blog_comment_body">{{ comment.content }}</div>#}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}

@@ -1,0 +1,24 @@
+.my_header{
+    background-color:#4B0082;
+    height:75px;
+    width:100%;
+   font-size: 50px;
+
+}
+.my-img{
+    width:55px;
+    height:55px;}
+
+.article-footer span{
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.my_container{
+    margin-top: 30px;
+    padding-right: 10px;
+    padding-left:10px;
+    margin-right: auto;
+    margin-left: auto;
+}
+

@@ -196,7 +196,6 @@ def article_detail(request,username,nid):
                    "article":article ,
                    "article_detail": article_detail,
                    "comment_list":comment_list,
-                    "pid":" "
                    }
                   )
 
@@ -255,6 +254,7 @@ def comment(request):
     else:
         comment_obj = models.Comment.objects.create(article_id=article_id, user=user, content=content)
     response["create_time"] =comment_obj.create_time.strftime("%Y-%m-%d")
+    #时间对象无法通过json序列化，需转化为字符串
     response["content"] =comment_obj.content
     response["pid"]=comment_obj.parent_comment_id
     response["username"]=comment_obj.user.username

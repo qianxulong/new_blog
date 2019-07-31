@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/my_css.css">
 </head>
 <body>
+{# 导航条 #}
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -42,6 +43,7 @@
                 </li>
             </ul>
             {% if request.user.username %}
+                {# 如果用户登录，显示这个导航 #}
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/app01/{{ request.user.username }}/">{{ request.user.username }}</a></li>
                     <li class="dropdown">
@@ -96,13 +98,16 @@
             {% for article in article_list %}
             <div class="article">
                 <h3><a href="/app01/{{ article.user.username }}/article/{{ article.nid }}">{{ article.title }}</a></h3>
+                {# href为文章详情页，返回article_detail.html #}                           {# 文章标题 #}
                 <div class="media">
                     <div class="media-left">
+                        {# 头像图片 #}
                         <a href="#">
                             <img class="media-object my-img" src="/media/{{ article.user.avatar }}" alt="...">
                         </a>
                     </div>
                     <div class="media-body">
+                        {# 文章简介 #}
                         <p class="media-heading">{{ article.desc }}</p>
                     </div>
                 </div>

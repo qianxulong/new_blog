@@ -33,6 +33,7 @@
     </div>
 
     {% if request.user.username %}
+        {# 只有当用户登录才能评论 #}
         <div id="comment_form" class="commentform">
         <div id="comment_form_container">
             <div id="commentform_title">发表评论</div>
@@ -64,6 +65,7 @@
     {% endif %}
 
     {% csrf_token %}
+    {# 建立这个信息标签，方便我们取到我们需要的信息 #}
     <div class="info" article_id="{{ article.pk }}" username="{{ request.user.username }}"></div>
     {#    做成静态文件导入#}
     <script src="/static/js/article_detail.js"></script>
@@ -137,9 +139,9 @@
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (data) {
-                        var create_time = data.create_time
-                        var content = data.content
-                        var username = data.username
+                        var create_time = data.create_time;
+                        var content = data.content;
+                        var username = data.username;
                         var div_str = " <div class=\"feedbackItem\">\n" +
                             "                <div class=\"feedbackListSubtitle\"> " +
                             "                    <span class=\"comment_date\">" + create_time + "</span> |\n" +
@@ -157,9 +159,11 @@
             )
         })
         $(document).on('click','a.reply_btn',function(){
-
+            //a.reply_btn标签对应的html代码是由ajax动态生成的，而ajax的执行又是异步的，因此当点击回复按钮时，可能回复按钮对应的html代码
+           //还没有生成，也就没有这个标签，更无法绑定点击事件，因此必须等文档加载完成后，在绑定事件，交给文档标签委托完成
             console.log(1)
             $("#tbCommentBody").focus();
+            //聚焦到当前标签
             var username = $(".reply_btn").attr("username");
             var s = "@" + username + "\n";
             $("#tbCommentBody").val(s);

@@ -30,4 +30,6 @@ urlpatterns = [
     # media相关的路由设置
     url(r'^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
     url(r'^app01/',include(blog_url)),
+    url(r'^upload/', views.upload),
+    url(r"^test/",views.test)
 ]

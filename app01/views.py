@@ -1,13 +1,12 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import auth
 from geetest import GeetestLib
-# Create your views here.
-
 from django import forms
 from app01 import models
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.db.models import Count
+
 class Regform(forms.Form):
     # name = forms.CharField(
     #      label="用户名",
@@ -267,3 +266,66 @@ def comment_tree(request,article_id):
     return JsonResponse(comment_list,safe=False)
 
 
+def add_article(request):
+
+    if request.method=="POST":
+        title=request.POST.get('title')
+        article_content=request.POST.get('article_content')
+        user=request.user
+
+        from bs4 import BeautifulSoup
+
+        bs=BeautifulSoup(article_content,"html.parser")
+        print(bs)
+        desc=bs.text[0:150]+"..."
+        print(desc)
+
+
+        # 过滤非法标签
+        for tag in bs.find_all():
+
+            print(tag.name)
+            print("文本" +tag.get_text())
+
+            if tag.name in ["script", "link"]:
+                tag.decompose()
+
+        article_obj=models.Article.objects.create(user=user,title=title,desc=desc)
+        models.ArticleDetail.objects.create(content=str(bs),article=article_obj)
+
+
+        return HttpResponse("添加成功")
+
+
+
+
+    return render(request,"add_article.html")
+
+
+
+from new_blog import settings
+import os,json
+def upload(request):
+    print(request.FILES)
+    obj = request.FILES.get("upload_img")
+
+    print("name",obj.name)
+
+    path=os.path.join(settings.MEDIA_ROOT,"add_article_img",obj.name)
+
+    with open(path,"wb") as f:
+        for line in obj:
+            f.write(line)
+
+
+    res={
+        "error":0,
+        "url":"/media/add_article_img/"+obj.name
+    }
+
+
+    return HttpResponse(json.dumps(res))
+
+
+def test(request):
+    return render(request,"test.html")

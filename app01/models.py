@@ -61,7 +61,7 @@ class Article(models.Model):
     nid = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50,verbose_name="标题")  # 文章标题
     desc = models.CharField(max_length=255, verbose_name="简介")  # 文章描述
-    create_time = models.DateTimeField(verbose_name="创建时间")  # 创建时间
+    create_time = models.DateTimeField(verbose_name="创建时间" ,auto_now_add=True)  # 创建时间
     # 评论数
     comment_count = models.IntegerField(verbose_name="评论数", default=0)
     # 点赞数

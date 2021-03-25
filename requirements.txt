@@ -33,7 +33,7 @@ pycryptodome==3.9.0
 pygame==1.9.4
 PyMySQL==0.9.3
 pytz==2019.1
-PyYAML==5.1.2
+PyYAML==5.4
 redis==3.3.8
 requests==2.21.0
 shellescape==3.4.1
